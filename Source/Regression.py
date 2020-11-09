@@ -16,10 +16,6 @@ from sklearn.model_selection import cross_val_score, KFold, cross_validate
 import DataLoading
 
 
-def get_trained_model(x, y):
-    return get_model_pipeline().fit(x, y)
-
-
 def get_model_pipeline(model, name):
     return Pipeline(
         [
