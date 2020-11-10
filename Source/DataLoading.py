@@ -17,7 +17,9 @@ def get_raw_datasets(
 
 
 def get_datasets(
-    train_location="Data/raw/train.csv", test_location="Data/raw/test.csv"
+    train_location="Data/raw/train.csv",
+    test_location="Data/raw/test.csv",
+    exclude_columns=[],
 ):
     columns_to_drop = [
         "grid2-load",
@@ -41,8 +43,8 @@ def get_datasets(
 
     raw_train = pd.read_csv(train_location, parse_dates=True).dropna(0)
     raw_test = pd.read_csv(test_location, parse_dates=True).dropna(0)
-    pruned_train = raw_train.drop(columns=columns_to_drop)
-    pruned_test = raw_test.drop(columns=columns_to_drop)
+    pruned_train = raw_train.drop(columns=[*columns_to_drop, *exclude_columns])
+    pruned_test = raw_test.drop(columns=[*columns_to_drop, *exclude_columns])
 
     # get y values before shifting
     train_y = pruned_train["grid1-loss"].copy()
