@@ -51,10 +51,18 @@ def get_datasets(
     test_y = pruned_test["grid1-loss"].copy()
 
     # shift grid loss and load features 1 week to emulate real world delay of measurements
-    pruned_train["grid1-loss"] = shift_pandas_column(pruned_train["grid1-loss"])
-    pruned_train["grid1-load"] = shift_pandas_column(pruned_train["grid1-load"])
-    pruned_test["grid1-loss"] = shift_pandas_column(pruned_test["grid1-loss"])
-    pruned_test["grid1-load"] = shift_pandas_column(pruned_test["grid1-load"])
+    pruned_train["grid1-loss"] = shift_pandas_column(pruned_train["grid1-loss"]).drop(
+        pruned_train.index[-24 * 7]
+    )
+    pruned_train["grid1-load"] = shift_pandas_column(pruned_train["grid1-load"]).drop(
+        pruned_train.index[-24 * 7]
+    )
+    pruned_test["grid1-loss"] = shift_pandas_column(pruned_test["grid1-loss"]).drop(
+        pruned_test.index[-24 * 7]
+    )
+    pruned_test["grid1-load"] = shift_pandas_column(pruned_test["grid1-load"]).drop(
+        pruned_test.index[-24 * 7]
+    )
 
     # give name to first column
     pruned_train.rename(columns={"Unnamed: 0": "timestamp"}, inplace=True)
