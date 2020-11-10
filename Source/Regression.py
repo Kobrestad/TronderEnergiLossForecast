@@ -16,14 +16,19 @@ from sklearn.model_selection import cross_val_score, KFold, cross_validate
 import DataLoading
 
 
-def get_model_pipeline(model, name):
+def mean_absolute_percentage_error(y_true, y_pred):
+    y_true, y_pred = np.array(y_true), np.array(y_pred)
+    return np.mean(np.abs((y_true - y_pred) / y_true)) * 100
+
+
+def get_model_pipeline(model, name, poly_features=2):
     return Pipeline(
         [
             ("imputer", SimpleImputer()),
             # ('scaling', StandardScaler()), #seems to have no effect whatsoever
             (
                 "polys",
-                PolynomialFeatures(2),
+                PolynomialFeatures(poly_features),
             ),  # increasing above 2 causes significantly longer training time.
             (name, model),
         ]
@@ -55,27 +60,31 @@ def print_predictions(y_true, y_pred):
     plt.show()
 
 
-(x_train, y_train), (x_test, y_test) = DataLoading.get_datasets()
+(x_train, y_train), (x_test, y_test) = DataLoading.get_datasets(
+    exclude_columns=[
+        "grid1-loss-prophet-daily",
+        "grid1-loss-prophet-pred",
+        "grid1-loss-prophet-trend",
+        "grid1-loss-prophet-weekly",
+        "grid1-loss-prophet-yearly",
+    ]
+)
 
 # drop timestamps when using regression
 x_train = x_train.drop(columns=["timestamp"])
 x_test = x_test.drop(columns=["timestamp"])
 
-# regressors = [
-#     (LinearRegression(copy_X=True, n_jobs=6), 'linear'),
-#     (RandomForestRegressor(n_estimators=10, criterion='mae', n_jobs=6), 'forest'),
-# ]
-
 linear_pipeline = get_model_pipeline(LinearRegression(copy_X=True, n_jobs=6), "linear")
-random_forest_pipeline = get_model_pipeline(
-    RandomForestRegressor(n_estimators=10, criterion="mae", n_jobs=6), "forest"
-)
+# random_forest_pipeline = get_model_pipeline(
+#     RandomForestRegressor(n_estimators=10, criterion="mae", n_jobs=6), "forest"
+# )
 
 linear_scores = model_cross_validation(linear_pipeline, x_train, y_train)
-random_forest_scores = model_cross_validation(random_forest_pipeline, x_train, y_train)
+print(linear_scores, linear_scores.mean())
+# random_forest_scores = model_cross_validation(random_forest_pipeline, x_train, y_train)
 
-with open("results.txt", "a") as file:
-    file.write(f"linear: {linear_scores}\trandom forest: {random_forest_scores}\n")
+# with open("results.txt", "a") as file:
+#     file.write(f"linear: {linear_scores}\trandom forest: {random_forest_scores}\n")
 
 # model = linear_pipeline.fit(x_train, y_train)
 
