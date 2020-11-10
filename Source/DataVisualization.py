@@ -17,8 +17,15 @@ def plot_predictions(y_true, y_pred):
     plt.show()
 
 
-def plot_timeseries_feature(
-    y, x=None, name="Figure", title="A figure", color="red", figsize=(28, 3)
+def create_timeseries_figure(
+    y,
+    x=None,
+    name="Figure",
+    title="A figure",
+    color="red",
+    figsize=(10, 4),
+    xlabel="Date",
+    ylabel="Value",
 ):
     plot_date = True
 
@@ -26,53 +33,88 @@ def plot_timeseries_feature(
         x = np.arange(len(y))
         plot_date = False
 
-    plt.figure(name, figsize=figsize)  # a second figure
+    fig, ax = plt.subplots()
 
     if plot_date:
-        plt.plot_date(
-            x, y, color=color, xdate=True, linestyle="-", linewidth=1, fmt=","
-        )
+        ax.plot_date(x, y, color=color, xdate=True, linestyle="-", linewidth=1, fmt=",")
     else:
-        plt.plot(x, y, color=color, linestyle="-", linewidth=1)
+        ax.plot(x, y, color=color, linestyle="-", linewidth=1)
 
-    plt.title(title)
+    ax.set(
+        xlabel=xlabel,
+        ylabel=ylabel,
+        title=title,
+    )
+    ax.grid()
 
-    plt.show()
+    fig.set_size_inches(figsize)
+
+    return fig
 
 
 def main():
     train, _ = DataLoading.get_raw_datasets()
     x = pd.to_datetime(train["timestamp"])
 
-    plot_timeseries_feature(train["grid1-loss"], x, title="Training set grid loss")
-    plot_timeseries_feature(train["grid1-load"], x, title="Training set grid load")
-    plot_timeseries_feature(
-        train["grid1-loss-prophet-pred"], x, title="Prophet prediction"
-    )
-    plot_timeseries_feature(
-        train["grid1-loss-prophet-trend"], x, title="Prophet trend component"
-    )
-    plot_timeseries_feature(
-        train["grid1-loss-prophet-daily"], x, title="Prophet daily component"
-    )
-    plot_timeseries_feature(
-        train["grid1-loss-prophet-weekly"], x, title="Prophet weekly component"
-    )
-    plot_timeseries_feature(
-        train["grid1-loss-prophet-yearly"], x, title="Prophet yearly component"
-    )
-    plot_timeseries_feature(train["grid1-temp"], x, title="Temperature forecast")
-    plot_timeseries_feature(train["season_x"], x, title="Season x")
-    plot_timeseries_feature(train["season_y"], x, title="Season y")
-    plot_timeseries_feature(train["month_x"], x, title="Month x")
-    plot_timeseries_feature(train["month_y"], x, title="Month y")
-    plot_timeseries_feature(train["week_x"], x, title="Week x")
-    plot_timeseries_feature(train["week_y"], x, title="Week y")
-    plot_timeseries_feature(train["weekday_x"], x, title="Weekday x")
-    plot_timeseries_feature(train["weekday_y"], x, title="Weekday y")
-    plot_timeseries_feature(train["hour_x"], x, title="Hour x")
-    plot_timeseries_feature(train["hour_y"], x, title="Hour y")
-    plot_timeseries_feature(train["holiday"], x, title="Holiday")
+    features_to_plot = [
+        ["grid1-loss", "Training set grid loss", "Grid loss (MW)"],
+        ["grid1-load", "Training set grid load", "Grid load (MW)", "green"],
+        [
+            "grid1-loss-prophet-pred",
+            "Prophet predicted grid loss",
+            "Predicted grid loss (MW)",
+            "blue",
+        ],
+        [
+            "grid1-loss-prophet-trend",
+            "Prophet trend component of grid loss prediction",
+            "Trend component (MW)",
+            "blue",
+        ],
+        [
+            "grid1-loss-prophet-daily",
+            "Prophet daily component of grid loss prediction",
+            "Daily component (MW)",
+            "blue",
+        ],
+        [
+            "grid1-loss-prophet-weekly",
+            "Prophet weekly component of grid loss prediction",
+            "Weekly component (MW)",
+            "blue",
+        ],
+        [
+            "grid1-loss-prophet-yearly",
+            "Prophet yearly component of grid loss prediction",
+            "Yearly component (MW)",
+            "blue",
+        ],
+        [
+            "grid1-temp",
+            "Temperature forecast in area around grid",
+            "Temperature (K)",
+            "black",
+        ],
+        ["season_x", "Season x"],
+        ["season_y", "Season y"],
+        ["month_x", "Month x"],
+        ["month_y", "Month y"],
+        ["week_x", "Week x"],
+        ["week_y", "Week y"],
+        ["weekday_x", "Weekday x"],
+        ["weekday_y", "Weekday y"],
+        ["hour_x", "Hour x"],
+        ["hour_y", "Hour y"],
+        ["holiday", "Holiday"],
+    ]
+
+    for (feature, title, *args) in features_to_plot:
+        ylabel = args[0] if len(args) else "Value"
+        color = args[1] if len(args) > 1 else "red"
+        fig = create_timeseries_figure(
+            train[feature], x=x, title=title, ylabel=ylabel, color=color
+        )
+        fig.savefig(f"{title}.png")
 
 
 main()
