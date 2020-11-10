@@ -55,9 +55,7 @@ def print_predictions(y_true, y_pred):
     plt.show()
 
 
-(x_train, y_train), (x_test, y_test) = DataLoading.get_datasets(
-    "Data/raw/train.csv", "Data/raw/test.csv"
-)
+(x_train, y_train), (x_test, y_test) = DataLoading.get_datasets()
 
 # drop timestamps when using regression
 x_train = x_train.drop(columns=["timestamp"])
