@@ -57,36 +57,37 @@ def main():
     x = pd.to_datetime(train["timestamp"])
 
     features_to_plot = [
-        ["grid1-loss", "Training set grid loss", "Grid loss (MW)"],
-        ["grid1-load", "Training set grid load", "Grid load (MW)", "green"],
+        ["demand", "Estimated demand for Trondheim", "Power demand (MWh)"],
+        ["grid1-loss", "Training set grid loss", "Grid loss (MWh)"],
+        ["grid1-load", "Training set grid load", "Grid load (MWh)", "green"],
         [
             "grid1-loss-prophet-pred",
             "Prophet predicted grid loss",
-            "Predicted grid loss (MW)",
+            "Predicted grid loss (MWh)",
             "blue",
         ],
         [
             "grid1-loss-prophet-trend",
             "Prophet trend component of grid loss prediction",
-            "Trend component (MW)",
+            "Trend component (MWh)",
             "blue",
         ],
         [
             "grid1-loss-prophet-daily",
             "Prophet daily component of grid loss prediction",
-            "Daily component (MW)",
+            "Daily component (MWh)",
             "blue",
         ],
         [
             "grid1-loss-prophet-weekly",
             "Prophet weekly component of grid loss prediction",
-            "Weekly component (MW)",
+            "Weekly component (MWh)",
             "blue",
         ],
         [
             "grid1-loss-prophet-yearly",
             "Prophet yearly component of grid loss prediction",
-            "Yearly component (MW)",
+            "Yearly component (MWh)",
             "blue",
         ],
         [
@@ -114,7 +115,7 @@ def main():
         fig = create_timeseries_figure(
             train[feature], x=x, title=title, ylabel=ylabel, color=color
         )
-        fig.savefig(f"{title}.png")
+        fig.savefig(f"images/{title}.png")
 
 
 main()
