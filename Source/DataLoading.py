@@ -5,9 +5,21 @@ def shift_pandas_column(column, periods=24 * 7):
     return column.shift(periods, fill_value=column.mean())
 
 
+def get_raw_datasets(
+    train_location="Data/raw/train.csv", test_location="Data/raw/test.csv"
+):
+    train = pd.read_csv(train_location, parse_dates=True)
+    test = pd.read_csv(test_location, parse_dates=True)
+    train.rename(columns={"Unnamed: 0": "timestamp"}, inplace=True)
+    test.rename(columns={"Unnamed: 0": "timestamp"}, inplace=True)
+
+    return train, test
+
+
 def get_datasets(
-    train_location="/kaggle/input/grid-loss-time-series-dataset/train.csv",
-    test_location="/kaggle/input/grid-loss-time-series-dataset/test.csv",
+    train_location="Data/raw/train.csv",
+    test_location="Data/raw/test.csv",
+    exclude_columns=[],
 ):
     columns_to_drop = [
         "grid2-load",
@@ -31,18 +43,26 @@ def get_datasets(
 
     raw_train = pd.read_csv(train_location, parse_dates=True).dropna(0)
     raw_test = pd.read_csv(test_location, parse_dates=True).dropna(0)
-    pruned_train = raw_train.drop(columns=columns_to_drop)
-    pruned_test = raw_test.drop(columns=columns_to_drop)
+    pruned_train = raw_train.drop(columns=[*columns_to_drop, *exclude_columns])
+    pruned_test = raw_test.drop(columns=[*columns_to_drop, *exclude_columns])
 
     # get y values before shifting
     train_y = pruned_train["grid1-loss"].copy()
     test_y = pruned_test["grid1-loss"].copy()
 
     # shift grid loss and load features 1 week to emulate real world delay of measurements
-    pruned_train["grid1-loss"] = shift_pandas_column(pruned_train["grid1-loss"])
-    pruned_train["grid1-load"] = shift_pandas_column(pruned_train["grid1-load"])
-    pruned_test["grid1-loss"] = shift_pandas_column(pruned_test["grid1-loss"])
-    pruned_test["grid1-load"] = shift_pandas_column(pruned_test["grid1-load"])
+    pruned_train["grid1-loss"] = shift_pandas_column(pruned_train["grid1-loss"]).drop(
+        pruned_train.index[-24 * 7]
+    )
+    pruned_train["grid1-load"] = shift_pandas_column(pruned_train["grid1-load"]).drop(
+        pruned_train.index[-24 * 7]
+    )
+    pruned_test["grid1-loss"] = shift_pandas_column(pruned_test["grid1-loss"]).drop(
+        pruned_test.index[-24 * 7]
+    )
+    pruned_test["grid1-load"] = shift_pandas_column(pruned_test["grid1-load"]).drop(
+        pruned_test.index[-24 * 7]
+    )
 
     # give name to first column
     pruned_train.rename(columns={"Unnamed: 0": "timestamp"}, inplace=True)
