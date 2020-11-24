@@ -1,8 +1,9 @@
+import numpy as np
+from matplotlib import pyplot as plt
 from matplotlib.pyplot import plot
 import DataLoading
 from Evaluation import Evaluation
-import numpy as np
-from matplotlib import pyplot as plt
+from Metrics import mean_absolute_percentage_error, root_mean_squared_error
 
 WEEK = 167
 WEEK_PLUS_24 = 191
@@ -87,7 +88,7 @@ def exponential_smoothing_triple_complete(
     length = len(acc_res)
     x_length = np.arange(length)
     x_total_length = np.arange(len(y_total))
-    plt.figure("1", figsize=(15, 4))
+    plt.figure("1", figsize=(10, 4))
     plt.title("Predicted vs actual loss on test set")
     plt.plot(x_length, acc_res, color="green", label="Predicted loss")
     plt.plot(x_total_length, y_total, color="blue", label="Actual loss")
@@ -105,7 +106,7 @@ def plot_results(y_train, y_test, y_predicted):
     x_train = np.arange(len(y_train))
     x_test = np.arange(start=len(y_train), stop=x_total_length)
     x_pred = np.arange(start=len(y_train), stop=x_total_length)
-    plt.figure("1", figsize=(15, 3))
+    plt.figure("1", figsize=(10, 4))
     plt.title("Predicted vs actual loss on test set")
     plt.plot(x_train, y_train, color="green", label="Actual loss in training set")
     plt.plot(x_test, y_test, color="blue", label="Actual loss in test set")
@@ -136,13 +137,25 @@ def main():
 
     # Evaluation array is mean_absolute_error, mean_squared_error, median_absolute_error respectively
     evaluation = Evaluation.run(y_test.values, y_predicted)
-    print(f"Evaluation results from whole prediction: {evaluation}")
+    mape = mean_absolute_percentage_error(y_test.values, y_predicted)
+    rmse = root_mean_squared_error(y_test.values, y_predicted)
+    print(
+        f"Evaluation results from whole prediction: {evaluation}, mape: {mape}, rmse: {rmse}"
+    )
 
     evaluation = Evaluation.run(y_test[:23], y_predicted[:23])
-    print(f"Evaluation results for next 24 hrs: {evaluation}")
+    mape = mean_absolute_percentage_error(y_test.values[:23], y_predicted[:23])
+    rmse = root_mean_squared_error(y_test.values[:23], y_predicted[:23])
+    print(
+        f"Evaluation results for next 24 hrs: {evaluation}, mape: {mape}, rmse: {rmse}"
+    )
 
     evaluation = Evaluation.run(y_test[167:191], y_predicted[167:191])
-    print(f"Evaluation results for a next day a week into the future: {evaluation}")
+    mape = mean_absolute_percentage_error(y_test.values[167:191], y_predicted[167:191])
+    rmse = root_mean_squared_error(y_test.values[167:191], y_predicted[167:191])
+    print(
+        f"Evaluation results for a next day a week into the future: {evaluation}, mape: {mape}, rmse: {rmse}"
+    )
 
     plot_results(y_train, y_test, y_predicted)
 
@@ -150,7 +163,11 @@ def main():
     y_pred = exponential_smoothing_triple_complete(y_train.values, y_test.values)
 
     evaluation = Evaluation.run(y_total[len(y_total) - len(y_pred) :], y_pred)
-    print(f"Evaluation results from whole prediction: {evaluation}")
+    mape = mean_absolute_percentage_error(y_total[len(y_total) - len(y_pred) :], y_pred)
+    rmse = root_mean_squared_error(y_total[len(y_total) - len(y_pred) :], y_pred)
+    print(
+        f"Evaluation results from whole prediction feeding 24 hours at a time: {evaluation}, mape: {mape}, rmse: {rmse}"
+    )
 
 
 if __name__ == "__main__":
