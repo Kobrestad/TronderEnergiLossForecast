@@ -1,6 +1,5 @@
 import numpy as np
 from matplotlib import pyplot as plt
-from matplotlib.pyplot import plot
 import DataLoading
 from Evaluation import Evaluation
 from Metrics import mean_absolute_percentage_error, root_mean_squared_error
@@ -33,9 +32,7 @@ def initial_seasonals(data, s_length):
     return seasonals
 
 
-def exponential_smoothing_triple(
-    data, s_length=24, alpha=0.652, beta=0.028, gamma=0.932, n_preds=24
-):
+def holt_winters(data, s_length=24, alpha=0.652, beta=0.028, gamma=0.932, n_preds=24):
     result = []
     seasonals = initial_seasonals(data, s_length)
     for i in range(len(data) + n_preds):
@@ -62,9 +59,13 @@ def exponential_smoothing_triple(
     return result
 
 
-def exponential_smoothing_triple_complete(
+def holt_winters_online(
     data,
     test_data,
+    s_length=24,
+    alpha=0.652,
+    beta=0.028,
+    gamma=0.932,
     n_preds=WEEK_PLUS_24,
 ):
     y_train = data
@@ -81,24 +82,60 @@ def exponential_smoothing_triple_complete(
             if y_total.size <= index:
                 done = True
                 break
-            y_pred = exponential_smoothing_triple(data=data_so_far, n_preds=n_preds)
-            next_day_one_week_forward = y_pred[WEEK + index : WEEK_PLUS_24 + index]
+            y_pred = holt_winters(
+                data=data_so_far,
+                s_length=s_length,
+                alpha=alpha,
+                beta=beta,
+                gamma=gamma,
+                n_preds=n_preds,
+            )
+            next_day_one_week_forward = y_pred[WEEK + index : WEEK_PLUS_24 + 1 + index]
             acc_res.extend(next_day_one_week_forward)
 
-    length = len(acc_res)
+    # length = len(acc_res)
+    # x_length = np.arange(length)
+    # x_total_length = np.arange(len(y_total))
+    # plt.figure("1", figsize=(10, 4))
+    # plt.title("Predicted vs actual loss on test set")
+    # plt.plot(x_length, acc_res, color="green", label="Predicted loss")
+    # plt.plot(x_total_length, y_total, color="blue", label="Actual loss")
+    # plt.xlabel(f"timer")
+    # plt.ylabel(f"grid_loss")
+    # plt.grid()
+    # plt.legend(loc="best")
+
+    # plt.show()
+    return acc_res
+
+
+def plot_online_results(y_train, y_test, y_predicted):
+    y_total = np.append(y_train, y_test)
+    length = len(y_predicted)
     x_length = np.arange(length)
-    x_total_length = np.arange(len(y_total))
+    # x_total_length = np.arange(len(y_total))
     plt.figure("1", figsize=(10, 4))
     plt.title("Predicted vs actual loss on test set")
-    plt.plot(x_length, acc_res, color="green", label="Predicted loss")
-    plt.plot(x_total_length, y_total, color="blue", label="Actual loss")
+    plt.plot(x_length, y_predicted, color="red", label="Predicted loss")
+    # plt.plot(x_total_length, y_total, color="orange", label="Actual loss")
+    plt.plot(
+        np.arange(len(y_train)),
+        y_train,
+        color="green",
+        label="Actual loss: training data",
+    )
+    plt.plot(
+        np.arange(start=len(y_train), stop=len(y_total)),
+        y_test,
+        color="blue",
+        label="Actual loss: test data",
+    )
     plt.xlabel(f"timer")
     plt.ylabel(f"grid_loss")
     plt.grid()
     plt.legend(loc="best")
 
     plt.show()
-    return acc_res
 
 
 def plot_results(y_train, y_test, y_predicted):
@@ -125,7 +162,7 @@ def main():
     )
     y_total = np.append(y_train.values, y_test.values)
 
-    y_pred = exponential_smoothing_triple(
+    y_pred = holt_winters(
         y_train.values,
         s_length=24,
         alpha=0.652,
@@ -135,6 +172,7 @@ def main():
     )
     y_predicted = y_pred[-len(y_test) :]
 
+    print("__________________Offline learning__________________")
     # Evaluation array is mean_absolute_error, mean_squared_error, median_absolute_error respectively
     evaluation = Evaluation.run(y_test.values, y_predicted)
     mape = mean_absolute_percentage_error(y_test.values, y_predicted)
@@ -143,31 +181,35 @@ def main():
         f"Evaluation results from whole prediction: {evaluation}, mape: {mape}, rmse: {rmse}"
     )
 
-    evaluation = Evaluation.run(y_test[:23], y_predicted[:23])
-    mape = mean_absolute_percentage_error(y_test.values[:23], y_predicted[:23])
-    rmse = root_mean_squared_error(y_test.values[:23], y_predicted[:23])
+    evaluation = Evaluation.run(y_test[:24], y_predicted[:24])
+    mape = mean_absolute_percentage_error(y_test.values[:24], y_predicted[:24])
+    rmse = root_mean_squared_error(y_test.values[:24], y_predicted[:24])
     print(
         f"Evaluation results for next 24 hrs: {evaluation}, mape: {mape}, rmse: {rmse}"
     )
 
-    evaluation = Evaluation.run(y_test[167:191], y_predicted[167:191])
-    mape = mean_absolute_percentage_error(y_test.values[167:191], y_predicted[167:191])
-    rmse = root_mean_squared_error(y_test.values[167:191], y_predicted[167:191])
+    evaluation = Evaluation.run(y_test[167:192], y_predicted[167:192])
+    mape = mean_absolute_percentage_error(y_test.values[167:192], y_predicted[167:192])
+    rmse = root_mean_squared_error(y_test.values[167:192], y_predicted[167:192])
     print(
-        f"Evaluation results for a next day a week into the future: {evaluation}, mape: {mape}, rmse: {rmse}"
+        f"Evaluation results for next day a week into the future: {evaluation}, mape: {mape}, rmse: {rmse}"
     )
 
     plot_results(y_train, y_test, y_predicted)
 
+    print("\n__________________Online learning__________________")
+    print("All predictions are made one week into the future.")
     # Feed 24 hours more data at a time. Is better for total prediction, but less accurate on specifics.
-    y_pred = exponential_smoothing_triple_complete(y_train.values, y_test.values)
+    y_pred = holt_winters_online(y_train.values, y_test.values)
 
     evaluation = Evaluation.run(y_total[len(y_total) - len(y_pred) :], y_pred)
     mape = mean_absolute_percentage_error(y_total[len(y_total) - len(y_pred) :], y_pred)
     rmse = root_mean_squared_error(y_total[len(y_total) - len(y_pred) :], y_pred)
     print(
-        f"Evaluation results from whole prediction feeding 24 hours at a time: {evaluation}, mape: {mape}, rmse: {rmse}"
+        f"Evaluation results from whole prediction: {evaluation}, mape: {mape}, rmse: {rmse}"
     )
+
+    plot_online_results(y_train.values, y_test.values, y_pred)
 
 
 if __name__ == "__main__":
