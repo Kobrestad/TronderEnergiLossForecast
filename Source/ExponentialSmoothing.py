@@ -7,62 +7,71 @@ from Metrics import mean_absolute_percentage_error, root_mean_squared_error
 WEEK = 167
 WEEK_PLUS_24 = 191
 
-
-def initial_trend(data, s_length):
+# computes the average of the trends across seasons
+def initial_trend(data, season_length):
     total = 0.0
-    for i in range(s_length):
-        total += float(data[i + s_length] - data[i]) / s_length
-    return total / s_length
+    for i in range(season_length):
+        total += float(data[i + season_length] - data[i]) / season_length
+    return total / season_length
 
 
-def initial_seasonals(data, s_length):
+# computes average level of every season in data
+# then sets the seasonal component to the average of each observed value
+# divided by the season average.
+def initial_seasonals(data, season_length):
     seasonals = {}
     season_averages = []
-    n_seasons = int(len(data) / s_length)
+    n_seasons = int(len(data) / season_length)
     # season averages
-    for j in range(n_seasons):
-        index = s_length * j
-        season_averages.append(sum(data[index : index + s_length]) / float(s_length))
+    for season in range(n_seasons):
+        index = season_length * season
+        season_averages.append(
+            sum(data[index : index + season_length]) / float(season_length)
+        )
     # initial values
-    for i in range(s_length):
+    for i in range(season_length):
         sum_over_avg = 0.0
-        for j in range(n_seasons):
-            sum_over_avg += data[s_length * j + i] - season_averages[j]
+        for season in range(n_seasons):
+            sum_over_avg += data[season_length * season + i] - season_averages[season]
         seasonals[i] = sum_over_avg / n_seasons
     return seasonals
 
 
-def holt_winters(data, s_length=24, alpha=0.005, beta=0.005, gamma=0.0625, n_preds=24):
+def holt_winters(
+    data, season_length=24, alpha=0.005, beta=0.005, gamma=0.0625, n_preds=24
+):
     result = []
-    seasonals = initial_seasonals(data, s_length)
+    seasonals = initial_seasonals(data, season_length)
     for i in range(len(data) + n_preds):
         if i == 0:  # initial values
-            smooth = data[0]
-            trend = initial_trend(data, s_length)
+            level = data[0]
+            trend = initial_trend(data, season_length)
             result.append(data[0])
             continue
         if i >= len(data):  # forecasting
             m = i - len(data) + 1
-            result.append((smooth + m * trend) + seasonals[i % s_length])
+            result.append((level + m * trend) + seasonals[i % season_length])
         else:  # training values
             val = data[i]
-            last_smooth, smooth = (
-                smooth,
-                alpha * (val - seasonals[i % s_length])
-                + (1 - alpha) * (smooth + trend),
+            last_level, level = (
+                level,
+                alpha * (val - seasonals[i % season_length])
+                + (1 - alpha) * (level + trend),
             )
-            trend = beta * (smooth - last_smooth) + (1 - beta) * trend
-            seasonals[i % s_length] = (
-                gamma * (val - smooth) + (1 - gamma) * seasonals[i % s_length]
+            trend = beta * (level - last_level) + (1 - beta) * trend
+            seasonals[i % season_length] = (
+                gamma * (val - level) + (1 - gamma) * seasonals[i % season_length]
             )
-            result.append(smooth + trend + seasonals[i % s_length])
+            result.append(level + trend + seasonals[i % season_length])
     return result
 
 
+# Predicts using chunks of data increasing by 24hrs at a time
+# Has to wait one week before starting to be able to capture seasonals
 def holt_winters_online(
     data,
     test_data,
-    s_length=24,
+    season_length=24,
     alpha=0.005,
     beta=0.005,
     gamma=0.0625,
@@ -84,7 +93,7 @@ def holt_winters_online(
                 break
             y_pred = holt_winters(
                 data=data_so_far,
-                s_length=s_length,
+                season_length=season_length,
                 alpha=alpha,
                 beta=beta,
                 gamma=gamma,
@@ -115,8 +124,8 @@ def plot_online_results(y_train, y_test, y_predicted):
         color="blue",
         label="Actual loss: test data",
     )
-    plt.xlabel(f"timer")
-    plt.ylabel(f"grid_loss")
+    plt.xlabel(f"Hour (h)")
+    plt.ylabel(f"Grid loss (MWh)")
     plt.grid()
     plt.legend(loc="best")
 
@@ -133,8 +142,8 @@ def plot_results(y_train, y_test, y_predicted):
     plt.plot(x_train, y_train, color="green", label="Actual loss in training set")
     plt.plot(x_test, y_test, color="blue", label="Actual loss in test set")
     plt.plot(x_pred, y_predicted, color="red", label="Predicted loss")
-    plt.xlabel(f"timer")
-    plt.ylabel(f"grid_loss")
+    plt.xlabel(f"Hour (h)")
+    plt.ylabel(f"Grid loss (MWh)")
     plt.grid()
     plt.legend(loc="best")
 
@@ -143,7 +152,7 @@ def plot_results(y_train, y_test, y_predicted):
 
 def main():
     (x_train, y_train), (x_test, y_test) = DataLoading.get_datasets(
-        "Data/raw/train.csv", "Data/raw/test.csv"
+        "Data/raw/train.csv", "Data/raw/test_backfilled_missing_data.csv"
     )
     y_total = np.append(y_train.values, y_test.values)
 
