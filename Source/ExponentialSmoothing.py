@@ -32,7 +32,7 @@ def initial_seasonals(data, s_length):
     return seasonals
 
 
-def holt_winters(data, s_length=24, alpha=0.652, beta=0.028, gamma=0.932, n_preds=24):
+def holt_winters(data, s_length=24, alpha=0.005, beta=0.005, gamma=0.0625, n_preds=24):
     result = []
     seasonals = initial_seasonals(data, s_length)
     for i in range(len(data) + n_preds):
@@ -63,9 +63,9 @@ def holt_winters_online(
     data,
     test_data,
     s_length=24,
-    alpha=0.652,
-    beta=0.028,
-    gamma=0.932,
+    alpha=0.005,
+    beta=0.005,
+    gamma=0.0625,
     n_preds=WEEK_PLUS_24,
 ):
     y_train = data
@@ -93,19 +93,6 @@ def holt_winters_online(
             next_day_one_week_forward = y_pred[WEEK + index : WEEK_PLUS_24 + 1 + index]
             acc_res.extend(next_day_one_week_forward)
 
-    # length = len(acc_res)
-    # x_length = np.arange(length)
-    # x_total_length = np.arange(len(y_total))
-    # plt.figure("1", figsize=(10, 4))
-    # plt.title("Predicted vs actual loss on test set")
-    # plt.plot(x_length, acc_res, color="green", label="Predicted loss")
-    # plt.plot(x_total_length, y_total, color="blue", label="Actual loss")
-    # plt.xlabel(f"timer")
-    # plt.ylabel(f"grid_loss")
-    # plt.grid()
-    # plt.legend(loc="best")
-
-    # plt.show()
     return acc_res
 
 
@@ -113,11 +100,9 @@ def plot_online_results(y_train, y_test, y_predicted):
     y_total = np.append(y_train, y_test)
     length = len(y_predicted)
     x_length = np.arange(length)
-    # x_total_length = np.arange(len(y_total))
     plt.figure("1", figsize=(10, 4))
     plt.title("Predicted vs actual loss on test set")
     plt.plot(x_length, y_predicted, color="red", label="Predicted loss")
-    # plt.plot(x_total_length, y_total, color="orange", label="Actual loss")
     plt.plot(
         np.arange(len(y_train)),
         y_train,
@@ -162,12 +147,10 @@ def main():
     )
     y_total = np.append(y_train.values, y_test.values)
 
+    # alpha=0.652, beta=0.028, gamma=0.932 were found by optimizing for next 24 hrs
+    # However default params are found after optimizing for whole dataset.
     y_pred = holt_winters(
         y_train.values,
-        s_length=24,
-        alpha=0.652,
-        beta=0.028,
-        gamma=0.932,
         n_preds=len(y_test),
     )
     y_predicted = y_pred[-len(y_test) :]

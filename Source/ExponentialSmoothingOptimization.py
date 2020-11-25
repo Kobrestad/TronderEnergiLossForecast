@@ -20,7 +20,7 @@ y_predicted = y_pred[-len(y_test) :]
 evaluation = Evaluation.run(y_test.values[:23], y_predicted[:23])
 print(f"Evaluation results: {evaluation}")
 
-
+# Method to brute force testing of different parameters.
 # use index_1 and index_2 to choose range of actual data to optimize parametres for
 def optimizer(data, actual, index_1=0, index_2=47, eval_type=1, iterations=100):
     alpha, beta, gamma = 1.0 / iterations, 1.0 / iterations, 1.0 / iterations
@@ -73,9 +73,9 @@ alpha, beta, gamma = optimizer(
     y_train.values,
     y_test.values,
     index_1=0,
-    index_2=24 * 8,
+    index_2=len(y_test.values),
     eval_type=1,
-    iterations=300,
+    iterations=400,
 )
 
 print(f"Best alpha: {alpha}\nBest beta: {beta}\nBest gamma: {gamma}")
@@ -120,13 +120,13 @@ def optimizer_online(data, actual, eval_type=1, iterations=4):
     return alpha, beta, gamma
 
 
-print("\nOnline parameter optimization...")
+# print("\nOnline parameter optimization...")
 
-alpha, beta, gamma = optimizer_online(
-    y_train.values,
-    y_test.values,
-    eval_type=1,
-    iterations=4,
-)
+# alpha, beta, gamma = optimizer_online(
+#    y_train.values,
+#    y_test.values,
+#    eval_type=1,
+#    iterations=4,
+# )
 
-print(f"Best alpha: {alpha}\nBest beta: {beta}\nBest gamma: {gamma}")
+# print(f"Best alpha: {alpha}\nBest beta: {beta}\nBest gamma: {gamma}")
