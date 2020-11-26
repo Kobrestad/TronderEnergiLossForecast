@@ -46,7 +46,6 @@ Then everything should be good to go.
 
 ## Guide to run the models
 
----
 
 ### Holt-Winters
 
