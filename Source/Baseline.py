@@ -6,6 +6,6 @@ class Baseline:
     """"""
 
     def predict(self, X):
-        y = X["grid1-loss-lagged"]
+        y = X["grid1-loss-lagged"].fillna(method="ffill")
 
-        return np.nan_to_num(y, nan=np.mean(y))
+        return y
