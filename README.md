@@ -37,6 +37,14 @@ Then everything should be good to go.
  ┗ 📜README.md
 ```
 
+## Guide to run the models
+
+### Holt-Winters
+
+### Linerar Regression
+
+### LSTM
+
 ## Various resources
 
 data source: https://www.kaggle.com/trnderenergikraft/grid-loss-time-series-dataset
