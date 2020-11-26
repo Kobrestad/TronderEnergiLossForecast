@@ -1,5 +1,13 @@
 # Grid Loss Time Series Forecasting: Three Machine Learning Approaches
 
+## Project setup
+
+This project manages virtual environments using pipenv.
+This can be downloaded using `pip install pipenv`.
+
+When the projects is cloned open the directory in a terminal and run `pipenv shell`, and then `pipenv install`, to install dependencies.
+Then everything should be good to go.
+
 ## File structure overview
 
 ```
@@ -9,9 +17,8 @@
  ┃ ┃ ┣ 📜test.csv
  ┃ ┃ ┣ 📜test_backfilled_missing_data.csv
  ┃ ┃ ┗ 📜train.csv
- ┣ 📂Notebooks (Notebooks contain LSTM Model)
- ┃ ┣ 📜lstm.ipynb
- ┃ ┗ 📜LSTMgridloss.ipynb
+ ┣ 📂Notebooks
+ ┃ ┗ 📜LSTMgridloss.ipynb (Notebook containing LSTM Model)
  ┣ 📂Source
  ┃ ┣ 📂RegressionModels
  ┃ ┃ ┗ 📜Linear.py
