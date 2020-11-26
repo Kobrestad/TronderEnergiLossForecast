@@ -157,7 +157,7 @@ def plot_results(y_train, y_test, y_predicted):
 
 def main():
     (x_train, y_train), (x_test, y_test) = DataLoading.get_datasets(
-        "Data/raw/train.csv", "Data/raw/test_backfilled_missing_data.csv"
+        "Data/raw/train.csv", "Data/raw/test.csv"
     )
     y_total = np.append(y_train.values, y_test.values)
 
