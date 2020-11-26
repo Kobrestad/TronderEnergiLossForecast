@@ -21,7 +21,7 @@ Then everything should be good to go.
  ┃ ┗ 📜LSTMgridloss.ipynb (Notebook containing LSTM Model)
  ┣ 📂Source
  ┃ ┣ 📂RegressionModels
- ┃ ┃ ┗ 📜Linear.py
+ ┃ ┃ ┗ 📜Linear.py (Wrapper class for Linear Regression)
  ┃ ┣ 📜Baseline.py (The baseline prediction function)
  ┃ ┣ 📜DataLoading.py (Used for loading data to models)
  ┃ ┣ 📜DataVisualization.py (Plotting utility)
@@ -31,7 +31,7 @@ Then everything should be good to go.
  ┃ ┣ 📜ExponentialSmoothingPlotting.py (Plotting for Holt-Winters)
  ┃ ┣ 📜main.py ()
  ┃ ┣ 📜Metrics.py (More evaluation metrics)
- ┃ ┗ 📜Regression.py (Contains the regression model)
+ ┃ ┗ 📜Regression.py (Contains helper functions for running the Linear model)
  ┣ 📜Pipfile (packages in pyenv)
  ┣ 📜Pipfile.lock
  ┗ 📜README.md
