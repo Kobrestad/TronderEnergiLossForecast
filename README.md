@@ -41,7 +41,9 @@ Then everything should be good to go.
 
 ### Holt-Winters
 
-### Linerar Regression
+### Linear Regression
+To run evaluation on test set:
+`python Source/Regression`
 
 ### LSTM
 
