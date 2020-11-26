@@ -37,8 +37,10 @@ def initial_seasonals(data, season_length):
     return seasonals
 
 
+# Regular holt winters, takes sequence as input, and predicts
+# n_preds predictions ahead.
 def holt_winters(
-    data, season_length=24, alpha=0.005, beta=0.005, gamma=0.0625, n_preds=24
+    data, season_length=24, alpha=0.016, beta=0.012, gamma=0.252, n_preds=24
 ):
     result = []
     seasonals = initial_seasonals(data, season_length)
@@ -66,15 +68,17 @@ def holt_winters(
     return result
 
 
-# Predicts using chunks of data increasing by 24hrs at a time
+# The Holt-Winters' method evaluated in the report.
+# Predicts one week ahead every 24hrs, using chunks of data
+# increasing by 24hrs at a time
 # Has to wait one week before starting to be able to capture seasonals
 def holt_winters_online(
     data,
     test_data,
     season_length=24,
-    alpha=0.005,
-    beta=0.005,
-    gamma=0.0625,
+    alpha=0.016,
+    beta=0.012,
+    gamma=0.252,
     n_preds=WEEK_PLUS_24,
 ):
     y_train = data
@@ -108,7 +112,8 @@ def holt_winters_online(
 def plot_online_results(y_train, y_test, y_predicted):
     y_total = np.append(y_train, y_test)
     length = len(y_predicted)
-    x_length = np.arange(length)
+    # Since online doesnt include first week, shift x-index by a week.
+    x_length = np.arange(start=WEEK, stop=length + WEEK)
     plt.figure("1", figsize=(10, 4))
     plt.title("Predicted vs actual loss on test set")
     plt.plot(x_length, y_predicted, color="red", label="Predicted loss")
