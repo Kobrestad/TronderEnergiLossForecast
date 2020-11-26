@@ -114,7 +114,7 @@ def plot_online_results(y_train, y_test, y_predicted):
     length = len(y_predicted)
     # Since online doesnt include first week, shift x-index by a week.
     x_length = np.arange(start=WEEK, stop=length + WEEK)
-    plt.figure("1", figsize=(10, 4))
+    f = plt.figure("1", figsize=(10, 4))
     plt.title("Predicted vs actual loss on test set")
     plt.plot(x_length, y_predicted, color="red", label="Predicted loss")
     plt.plot(
@@ -135,6 +135,35 @@ def plot_online_results(y_train, y_test, y_predicted):
     plt.legend(loc="best")
 
     plt.show()
+    f.savefig("online_pred.pdf", bbox_inches="tight")
+
+
+def plot_online_results_only_predictions(y_train, y_test, y_predicted):
+    y_total = np.append(y_train, y_test)
+    length = len(y_predicted)
+    # Since online doesnt include first week, shift x-index by a week.
+    x_length = np.arange(start=WEEK, stop=len(y_predicted) - len(y_train) + WEEK)
+    f = plt.figure("1", figsize=(10, 4))
+    plt.title("Predicted vs actual loss on test set")
+    plt.plot(
+        x_length,
+        y_predicted[len(y_train + WEEK) :],
+        color="red",
+        label="Predicted loss",
+    )
+    plt.plot(
+        np.arange(start=0, stop=len(y_test)),
+        y_test,
+        color="green",
+        label="Actual loss: test data",
+    )
+    plt.xlabel(f"Hour (h)")
+    plt.ylabel(f"Grid loss (MWh)")
+    plt.grid()
+    plt.legend(loc="best")
+
+    plt.show()
+    f.savefig("online_pred_only_test.pdf", bbox_inches="tight")
 
 
 def plot_results(y_train, y_test, y_predicted):
@@ -142,7 +171,7 @@ def plot_results(y_train, y_test, y_predicted):
     x_train = np.arange(len(y_train))
     x_test = np.arange(start=len(y_train), stop=x_total_length)
     x_pred = np.arange(start=len(y_train), stop=x_total_length)
-    plt.figure("1", figsize=(10, 4))
+    f = plt.figure("2", figsize=(10, 4))
     plt.title("Predicted vs actual loss on test set")
     plt.plot(x_train, y_train, color="green", label="Actual loss in training set")
     plt.plot(x_test, y_test, color="blue", label="Actual loss in test set")
@@ -153,6 +182,7 @@ def plot_results(y_train, y_test, y_predicted):
     plt.legend(loc="best")
 
     plt.show()
+    f.savefig("offline_pred.pdf", bbox_inches="tight")
 
 
 def main():
@@ -207,6 +237,8 @@ def main():
     )
 
     plot_online_results(y_train.values, y_test.values, y_pred)
+
+    plot_online_results_only_predictions(y_train.values, y_test.values, y_pred)
 
 
 if __name__ == "__main__":
