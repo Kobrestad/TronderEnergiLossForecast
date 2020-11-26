@@ -47,6 +47,17 @@ To run evaluation on test set:
 
 ### LSTM
 
+There are 2 options to run the LSTM model
+
+1. The notebook is available in Kaggle: https://www.kaggle.com/potetsos/lstmgridloss
+
+This notebook is already computed, and the output values and results are therefore available in the notebook.  
+The notebook can also be run in Kaggle to reproduce the results. 
+
+2. Download and run LSTMgridloss.ipynb  
+In order to run the notebook locally, the input locations of the .csv files need to be changed to point at the local .csv files.
+
+
 ## Various resources
 
 data source: https://www.kaggle.com/trnderenergikraft/grid-loss-time-series-dataset
