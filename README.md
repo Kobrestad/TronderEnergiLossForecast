@@ -43,7 +43,7 @@ Then everything should be good to go.
 
 ### Linear Regression
 To run evaluation on test set:
-`python Source/Regression`
+`python Source/Regression.py`
 
 ### LSTM
 
