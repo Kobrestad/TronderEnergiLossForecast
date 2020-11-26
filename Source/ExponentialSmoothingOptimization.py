@@ -21,22 +21,20 @@ evaluation = Evaluation.run(y_test.values[:23], y_predicted[:23])
 print(f"Evaluation results: {evaluation}")
 
 # Method to brute force testing of different parameters.
-# use index_1 and index_2 to choose range of actual data to optimize parametres for
-def optimizer(data, actual, index_1=0, index_2=47, eval_type=1, iterations=100):
+def optimizer(data, actual, eval_type=1, iterations=100):
     alpha, beta, gamma = 1.0 / iterations, 1.0 / iterations, 1.0 / iterations
+    total_actual = np.append(data, actual)
     old_errors = Evaluation.run(
-        actual[index_1:index_2],
-        holt_winters(data, alpha=alpha, beta=beta, gamma=gamma, n_preds=len(actual))[
-            index_1 + len(data) : index_2 + len(data)
-        ],
+        total_actual,
+        holt_winters(data, alpha=alpha, beta=beta, gamma=gamma, n_preds=len(actual)),
     )
     for i in range(0, iterations):
         temp_alpha = alpha + 1 / iterations
         errors = Evaluation.run(
-            actual[index_1:index_2],
+            total_actual,
             holt_winters(
                 data, alpha=temp_alpha, beta=beta, gamma=gamma, n_preds=len(actual)
-            )[index_1 + len(data) : index_2 + len(data)],
+            ),
         )
         if errors[eval_type] < old_errors[eval_type]:
             alpha = temp_alpha
@@ -44,10 +42,10 @@ def optimizer(data, actual, index_1=0, index_2=47, eval_type=1, iterations=100):
 
         temp_beta = beta + 1 / iterations
         errors = Evaluation.run(
-            actual[index_1:index_2],
+            total_actual,
             holt_winters(
                 data, alpha=alpha, beta=temp_beta, gamma=gamma, n_preds=len(actual)
-            )[index_1 + len(data) : index_2 + len(data)],
+            ),
         )
         if errors[eval_type] < old_errors[eval_type]:
             beta = temp_beta
@@ -55,10 +53,10 @@ def optimizer(data, actual, index_1=0, index_2=47, eval_type=1, iterations=100):
 
         temp_gamma = gamma + 1 / iterations
         errors = Evaluation.run(
-            actual[index_1:index_2],
+            total_actual,
             holt_winters(
                 data, alpha=alpha, beta=beta, gamma=temp_gamma, n_preds=len(actual)
-            )[index_1 + len(data) : index_2 + len(data)],
+            ),
         )
         if errors[eval_type] < old_errors[eval_type]:
             gamma = temp_gamma
@@ -69,13 +67,16 @@ def optimizer(data, actual, index_1=0, index_2=47, eval_type=1, iterations=100):
 
 print("\nOffline parameter optimalization...")
 
+# Split training data into part to train of, and part to predict
+# Split is 70/30
+train_values = y_train.values[: int(len(y_train.values) * 0.7)]
+test_values = y_train.values[len(train_values) :]
+
 alpha, beta, gamma = optimizer(
-    y_train.values,
-    y_test.values,
-    index_1=0,
-    index_2=len(y_test.values),
+    train_values,
+    test_values,
     eval_type=1,
-    iterations=400,
+    iterations=250,
 )
 
 print(f"Best alpha: {alpha}\nBest beta: {beta}\nBest gamma: {gamma}")
