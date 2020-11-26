@@ -39,7 +39,19 @@ Then everything should be good to go.
 
 ## Guide to run the models
 
+---
+
 ### Holt-Winters
+
+The files regarding the Holt-Winters method are
+
+- [`ExponentialSmoothing.py`](./Source/ExponentialSmoothing.py)
+- [`ExponentialSmoothingOptimalization.py`](./Source/ExponentialSmoothingOptimalization.py)
+- [`ExponentialSmoothingPlotting.py`](./Source/ExponentialSmoothingPlotting.py)
+
+The implementations of the Holt-Winters functions are found in [`ExponentialSmoothing.py`](./Source/ExponentialSmoothing.py). For this file it is enough to run it. The main method will run through the dataset using, the offline method, evaluating it and plotting it. Then it will run the online method, evaluate it and plot it twice, firstly with the whole dataset, and the second time only with the test set.
+
+The model parameters that are set as default in the holt-winters methods are found running the `optimalization` method in [`ExponentialSmoothingOptimalization.py`](./Source/ExponentialSmoothing.py). This file can also be run as it is, however might take some time to complete. The output from running the file will be the found optimal values for α, β and γ.
 
 ### Linerar Regression
 
