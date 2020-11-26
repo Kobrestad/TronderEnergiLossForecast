@@ -118,4 +118,5 @@ def main():
         fig.savefig(f"images/{title}.png")
 
 
-main()
+if __name__ == "__main__":
+    main()
