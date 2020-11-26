@@ -41,8 +41,8 @@ def get_datasets(
         "grid3-temp",
     ]
 
-    raw_train = pd.read_csv(train_location, parse_dates=True).dropna(0)
-    raw_test = pd.read_csv(test_location, parse_dates=True).dropna(0)
+    raw_train = pd.read_csv(train_location, parse_dates=True).fillna(method="ffill")
+    raw_test = pd.read_csv(test_location, parse_dates=True).fillna(method="ffill")
     pruned_train = raw_train.drop(columns=[*columns_to_drop, *exclude_columns])
     pruned_test = raw_test.drop(columns=[*columns_to_drop, *exclude_columns])
 

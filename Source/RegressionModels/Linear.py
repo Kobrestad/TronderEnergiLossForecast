@@ -1,7 +1,10 @@
 from sklearn.linear_model import LinearRegression, SGDRegressor
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler, PolynomialFeatures
-from sklearn.impute import SimpleImputer
+from sklearn.experimental import enable_iterative_imputer
+from sklearn.impute import SimpleImputer, KNNImputer, IterativeImputer
+from sklearn.feature_selection import SelectFromModel
+from sklearn.ensemble import ExtraTreesClassifier, RandomForestRegressor
 import numpy as np
 
 
@@ -28,10 +31,14 @@ class GridLossLinearModel:
     def get_pipeline():
         return Pipeline(
             [
-                ("imputer", SimpleImputer()),
+                ("knn_imputer", KNNImputer()),
                 (
                     "polys",
                     PolynomialFeatures(),
+                ),
+                (
+                    "selection",
+                    SelectFromModel(RandomForestRegressor(n_estimators=10, n_jobs=6)),
                 ),
                 ("linear", LinearRegression(n_jobs=6)),
             ]
