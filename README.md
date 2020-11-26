@@ -21,7 +21,7 @@ Then everything should be good to go.
  ┃ ┗ 📜LSTMgridloss.ipynb (Notebook containing LSTM Model)
  ┣ 📂Source
  ┃ ┣ 📂RegressionModels
- ┃ ┃ ┗ 📜Linear.py
+ ┃ ┃ ┗ 📜Linear.py (Wrapper class for Linear Regression)
  ┃ ┣ 📜Baseline.py (The baseline prediction function)
  ┃ ┣ 📜DataLoading.py (Used for loading data to models)
  ┃ ┣ 📜DataVisualization.py (Plotting utility)
@@ -31,7 +31,7 @@ Then everything should be good to go.
  ┃ ┣ 📜ExponentialSmoothingPlotting.py (Plotting for Holt-Winters)
  ┃ ┣ 📜main.py ()
  ┃ ┣ 📜Metrics.py (More evaluation metrics)
- ┃ ┗ 📜Regression.py (Contains the regression model)
+ ┃ ┗ 📜Regression.py (Contains helper functions for running the Linear model)
  ┣ 📜Pipfile (packages in pyenv)
  ┣ 📜Pipfile.lock
  ┗ 📜README.md
@@ -53,9 +53,22 @@ The implementations of the Holt-Winters functions are found in [`ExponentialSmoo
 
 The model parameters that are set as default in the holt-winters methods are found running the `optimalization` method in [`ExponentialSmoothingOptimalization.py`](./Source/ExponentialSmoothing.py). This file can also be run as it is, however might take some time to complete. The output from running the file will be the found optimal values for α, β and γ.
 
-### Linerar Regression
+### Linear Regression
+
+To run evaluation on test set:
+`python Source/Regression.py`
 
 ### LSTM
+
+There are 2 options to run the LSTM model
+
+1. The notebook is available in Kaggle: https://www.kaggle.com/potetsos/lstmgridloss
+
+This notebook is already computed, and the output values and results are therefore available in the notebook.  
+The notebook can also be run in Kaggle to reproduce the results.
+
+2. Download and run LSTMgridloss.ipynb  
+   In order to run the notebook locally, the input locations of the .csv files need to be changed to point at the local .csv files.
 
 ## Various resources
 
