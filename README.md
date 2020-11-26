@@ -1,5 +1,12 @@
 # Grid Loss Time Series Forecasting: Three Machine Learning Approaches
 
+## Description
+This project is inspired by the kaggle competition and paper linked below.
+
+data source: https://www.kaggle.com/trnderenergikraft/grid-loss-time-series-dataset
+
+reference paper: https://aaai.org/ojs/index.php/AAAI/article/view/7018
+
 ## Project setup
 
 This project manages virtual environments using pipenv.
@@ -46,12 +53,12 @@ Then everything should be good to go.
 The files regarding the Holt-Winters method are
 
 - [`ExponentialSmoothing.py`](./Source/ExponentialSmoothing.py)
-- [`ExponentialSmoothingOptimalization.py`](./Source/ExponentialSmoothingOptimalization.py)
+- [`ExponentialSmoothingOptimization.py`](./Source/ExponentialSmoothingOptimization.py)
 - [`ExponentialSmoothingPlotting.py`](./Source/ExponentialSmoothingPlotting.py)
 
 The implementations of the Holt-Winters functions are found in [`ExponentialSmoothing.py`](./Source/ExponentialSmoothing.py). For this file it is enough to run it. The main method will run through the dataset using, the offline method, evaluating it and plotting it. Then it will run the online method, evaluate it and plot it twice, firstly with the whole dataset, and the second time only with the test set.
 
-The model parameters that are set as default in the holt-winters methods are found running the `optimalization` method in [`ExponentialSmoothingOptimalization.py`](./Source/ExponentialSmoothing.py). This file can also be run as it is, however might take some time to complete. The output from running the file will be the found optimal values for α, β and γ.
+The model parameters that are set as default in the holt-winters methods are found running the `optimalization` method in [`ExponentialSmoothingOptimization.py`](./Source/ExponentialSmoothingOptimization.py). This file can also be run as it is, however might take some time to complete. The output from running the file will be the found optimal values for α, β and γ.
 
 ### Linear Regression
 
@@ -69,13 +76,3 @@ The notebook can also be run in Kaggle to reproduce the results.
 
 2. Download and run LSTMgridloss.ipynb  
    In order to run the notebook locally, the input locations of the .csv files need to be changed to point at the local .csv files.
-
-## Various resources
-
-data source: https://www.kaggle.com/trnderenergikraft/grid-loss-time-series-dataset
-
-reference paper: https://aaai.org/ojs/index.php/AAAI/article/view/7018
-
-some quick experiments: https://www.kaggle.com/askberk/grid-loss-exploration
-
-LSTM kaggle notebook with outputs: https://www.kaggle.com/potetsos/lstmgridloss
