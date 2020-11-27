@@ -22,6 +22,11 @@ def get_datasets(
     exclude_columns=[],
 ):
     columns_to_drop = [
+        "grid1-loss-prophet-daily",
+        "grid1-loss-prophet-pred",
+        "grid1-loss-prophet-trend",
+        "grid1-loss-prophet-weekly",
+        "grid1-loss-prophet-yearly",
         "grid2-load",
         "grid2-loss",
         "grid2-loss-prophet-daily",
@@ -74,6 +79,3 @@ def get_datasets(
     test = (pruned_test, test_y)
 
     return train, test
-
-
-# get_datasets('Data/raw/train.csv', 'Data/raw/test.csv')

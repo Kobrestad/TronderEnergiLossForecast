@@ -1,7 +1,13 @@
-from sklearn.metrics import mean_absolute_error as mae, mean_squared_error as mse, median_absolute_error as medae
+from sklearn.metrics import (
+    mean_absolute_error as mae,
+)
+from Metrics import (
+    mean_absolute_percentage_error as mape,
+    root_mean_squared_error as rmse,
+)
+
 
 class Evaluation:
+    @staticmethod
     def run(y_true, y_pred):
-        metrics = [mae, mse, medae]
-
-        return [calc(y_true, y_pred) for calc in metrics]
+        return mae(y_true, y_pred), rmse(y_true, y_pred), mape(y_true, y_pred)

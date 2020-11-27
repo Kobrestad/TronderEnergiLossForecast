@@ -1,6 +1,7 @@
 # Grid Loss Time Series Forecasting: Three Machine Learning Approaches
 
 ## Description
+
 This project is inspired by the kaggle competition and paper linked below.
 
 data source: https://www.kaggle.com/trnderenergikraft/grid-loss-time-series-dataset
@@ -27,25 +28,21 @@ Then everything should be good to go.
  ┣ 📂Notebooks
  ┃ ┗ 📜LSTMgridloss.ipynb (Notebook containing LSTM Model)
  ┣ 📂Source
- ┃ ┣ 📂RegressionModels
- ┃ ┃ ┗ 📜Linear.py (Wrapper class for Linear Regression)
  ┃ ┣ 📜Baseline.py (The baseline prediction function)
  ┃ ┣ 📜DataLoading.py (Used for loading data to models)
  ┃ ┣ 📜DataVisualization.py (Plotting utility)
- ┃ ┣ 📜Evaluation.py (Some Evaluation metrics)
+ ┃ ┣ 📜Evaluation.py (Used to run evaluation metrics)
  ┃ ┣ 📜ExponentialSmoothing.py (Run to see Holt-Winters results)
  ┃ ┣ 📜ExponentialSmoothingOptimization.py (Fitting method Holt-Winters)
  ┃ ┣ 📜ExponentialSmoothingPlotting.py (Plotting for Holt-Winters)
- ┃ ┣ 📜main.py ()
- ┃ ┣ 📜Metrics.py (More evaluation metrics)
- ┃ ┗ 📜Regression.py (Contains helper functions for running the Linear model)
+ ┃ ┣ 📜Metrics.py (Evaluation metrics)
+ ┃ ┗ 📜Linear.py (Linear Regression model)
  ┣ 📜Pipfile (packages in pyenv)
  ┣ 📜Pipfile.lock
  ┗ 📜README.md
 ```
 
 ## Guide to run the models
-
 
 ### Holt-Winters
 
@@ -61,8 +58,13 @@ The model parameters that are set as default in the holt-winters methods are fou
 
 ### Linear Regression
 
-To run evaluation on test set:
-`python Source/Regression.py`
+Everything related to the linear regression model is found in [`Linear.py`](./Source/Linear.py).
+
+To run the model on the test set with online learning:
+`python Source/Linear.py`
+
+Parameters are found by doing a grid search with cross validation, before the model is trained on the entire training set and then is run on the test set.
+It takes about 1 hour to run.
 
 ### LSTM
 
